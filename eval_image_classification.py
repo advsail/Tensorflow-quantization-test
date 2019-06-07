@@ -2,7 +2,8 @@ import argparse
 from models import resnet50, vgg16, inception_v3, mobilenet, xception, squeezenet
 from utils.load_weights import weight_loader
 from pkl_reader import DataGenerator
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+from keras import backend as K
 
 weights = {'vgg': 'vgg16_weights_tf_dim_ordering_tf_kernels.h5',
            'resnet': 'resnet50_weights_tf_dim_ordering_tf_kernels.h5',
@@ -25,6 +26,16 @@ def top5_acc(pred, k=5):
 
 
 if __name__ == '__main__':
+    '''
+    config = K.tf.ConfigProto(intra_op_parallelism_threads=args.jobs, \
+                            inter_op_parallelism_threads=args.jobs, \
+                            allow_soft_placement=True, \
+                            device_count = {'CPU': args.jobs})
+    session = K.tf.Session(config=config)
+    K.set_session(session)
+    '''
+    tf.disable_v2_behavior()
+
     parse = argparse.ArgumentParser(description='command for testing keras model with fp16 and fp32')
     parse.add_argument('--model', type=str, default='mobilenet', help='support vgg, resnet, densenet, \
          inception, inception_resnet, xception, mobilenet, squeezenet')
@@ -45,7 +56,7 @@ if __name__ == '__main__':
 
     Y = tf.placeholder(tf.float32, [None, 1000])
 
-    dg = DataGenerator('./data/val224_compressed.pkl', model=args.model, dtype='float32')
+    dg = DataGenerator('../dataset/val224_compressed.pkl', model=args.model, dtype='float32')
     with tf.device('/cpu:0'):
         if args.model == 'resnet':
             logits = resnet50.ResNet50(X, weights)
