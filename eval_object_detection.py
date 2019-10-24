@@ -20,12 +20,12 @@ device = '/cpu:0'
 
 
 class SSD300():
-    def __init__(self, weight_path=None, batch_szie=1, dataset='voc2007'):
+    def __init__(self, weight_path=None, batch_size=1, dataset='voc2007'):
         self.sess = tf.Session()
         self.X = tf.placeholder(tf.float32, [None, 300, 300, 3])
         self.Y = tf.placeholder(tf.float32, [None, 200, 6])
         self.weights = weight_loader(weight_path)
-        self.batch_size = batch_szie
+        self.batch_size = batch_size
         self.predictions = self.generate(dataset)
 
     def generate(self, dataset='voc2007'):
@@ -63,12 +63,12 @@ class SSD300():
 
 
 class SSD512():
-    def __init__(self, weight_path=None, batch_szie=1, dataset='voc2007'):
+    def __init__(self, weight_path=None, batch_size=1, dataset='voc2007'):
         self.sess = tf.Session()
         self.X = tf.placeholder(tf.float32, [None, 512, 512, 3])
         self.Y = tf.placeholder(tf.float32, [None, 200, 6])
         self.weights = weight_loader(weight_path)
-        self.batch_size = batch_szie
+        self.batch_size = batch_size
         self.predictions = self.generate(dataset)
 
     def generate(self, dataset='voc2007'):
@@ -119,17 +119,17 @@ if __name__ == '__main__':
         raise ValueError('YOLO model is trained on COCO so that YOLO only can be evaluated with COCO!')
 
     if args.eval_dataset == 'voc2007':
-        batch_szie = 8
+        batch_size = 8
         img_height = int(args.model[-3:])
         img_width = img_height
         n_classes = 20
 
         if args.model == 'ssd300':
             weight_path = './weights/' + weights['ssd300voc']
-            model = SSD300(weight_path, batch_szie=batch_szie, dataset='voc2007')
+            model = SSD300(weight_path, batch_size=batch_size, dataset='voc2007')
         else:
             weight_path = './weights/' + weights['ssd512voc']
-            model = SSD512(weight_path, batch_szie=batch_szie, dataset='voc2007')
+            model = SSD512(weight_path, batch_size=batch_size, dataset='voc2007')
         Pascal_VOC_dataset_images_dir = '../../datasets/VOCdevkit/VOC2007/JPEGImages/'
         Pascal_VOC_dataset_annotations_dir = '../../datasets/VOCdevkit/VOC2007/Annotations/'
         Pascal_VOC_dataset_image_set_filename = '../../datasets/VOCdevkit/VOC2007/ImageSets/Main/test.txt'
@@ -155,7 +155,7 @@ if __name__ == '__main__':
 
         results = evaluator(img_height=img_height,
                             img_width=img_width,
-                            batch_size=batch_szie,
+                            batch_size=batch_size,
                             data_generator_mode='resize',
                             round_confidences=False,
                             matching_iou_threshold=0.5,
@@ -177,23 +177,23 @@ if __name__ == '__main__':
         print("{:<14}{:<6}{}".format('', 'mAP', round(mean_average_precision, 3)))
 
     elif args.eval_dataset == 'coco':
-        batch_szie = 20
+        batch_size = 20
         img_height = int(args.model[-3:])
         img_width = img_height
         n_classes = 80
 
         if args.model == 'ssd300':
-            weight_path = './weights/' + weights['ssd300coco']
-            model = SSD300(weight_path, batch_szie=batch_szie, dataset='coco')
+            weight_path = '/Users/haozhang/Work/model_zoo/h5/' + weights['ssd300coco']
+            model = SSD300(weight_path, batch_size=batch_size, dataset='coco')
         else:
-            weight_path = './weights/' + weights['ssd512coco']
-            model = SSD512(weight_path, batch_szie=batch_szie, dataset='coco')
+            weight_path = '/Users/haozhang/Work/model_zoo/h5/' + weights['ssd512coco']
+            model = SSD512(weight_path, batch_size=batch_size, dataset='coco')
 
         dataset = DataGenerator()
 
         # Set the paths to the dataset here.
-        MS_COCO_dataset_images_dir = '../../datasets/val2017/'
-        MS_COCO_dataset_annotations_filename = '../../datasets/annotations/instances_val2017.json'
+        MS_COCO_dataset_images_dir = '/Users/haozhang/Work/COCO_val_2017_dataset/val2017'
+        MS_COCO_dataset_annotations_filename = '/Users/haozhang/Work/COCO_val_2017_dataset/annotations/instances_val2017.json'
 
         dataset.parse_json(images_dirs=[MS_COCO_dataset_images_dir],
                            annotations_filenames=[MS_COCO_dataset_annotations_filename],

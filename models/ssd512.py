@@ -516,6 +516,8 @@ def ssd_512(inputs, weights,
 
     # Concatenate the class and box predictions and the anchors to one large predictions vector
     # Output shape of `predictions`: (batch, n_boxes_total, n_classes + 4 + 8)
+    mbox_conf_softmax.set_shape([20, 24564, 81])
+    mbox_loc.set_shape([20, 24564, 4])
     predictions = Concatenate(axis=2, name='predictions')([mbox_conf_softmax, mbox_loc, mbox_priorbox])
 
     decoded_predictions = DecodeDetections(predictions,
